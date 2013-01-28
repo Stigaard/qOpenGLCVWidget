@@ -1,5 +1,5 @@
-#include "cqtopencvviewergl.h"
-#include "cqtopencvviewergl.moc"
+#include "qOpenGLCVWidget.h"
+#include "qOpenGLCVWidget.moc"
 #include <QTimer>
 
 CQtOpenCVViewerGl::CQtOpenCVViewerGl(QWidget *parent) :

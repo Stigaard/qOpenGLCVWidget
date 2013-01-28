@@ -1,5 +1,5 @@
-#ifndef CQTOPENCVVIEWERGL_H
-#define CQTOPENCVVIEWERGL_H
+#ifndef QOPENGLCVWIDGET_H
+#define QOPENGLCVWIDGET_H
 
 #include <QGLWidget>
 #include <QThread>
@@ -27,4 +27,4 @@ private:
     GLuint texName;
 };
 
-#endif // CQTOPENCVVIEWERGL_H
+#endif // QOPENGLCVWIDGET_H
