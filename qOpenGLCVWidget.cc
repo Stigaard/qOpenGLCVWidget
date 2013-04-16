@@ -66,7 +66,10 @@ void CQtOpenCVViewerGl::paintGL()
 
 	//Draw image from OpenCV capture
 	bufferMutex.lock();
-	glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_BGR, GL_UNSIGNED_BYTE,mOrigImage.ptr());		
+	if(mOrigImage.channels()==3)
+	  glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_BGR, GL_UNSIGNED_BYTE,mOrigImage.ptr());		
+	else
+	  glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_LUMINANCE, GL_UNSIGNED_BYTE,mOrigImage.ptr());		
 // 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, mOrigImage.size().width, mOrigImage.size().height, 0, GL_BGR, GL_UNSIGNED_BYTE, mOrigImage.ptr());
 	bufferMutex.unlock();
 // 	glEnable(GL_TEXTURE_2D);
