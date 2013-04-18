@@ -85,7 +85,7 @@ void CQtOpenCVViewerGl::paintGL()
 // 	glDisable(GL_TEXTURE_2D);
 }
 
-bool CQtOpenCVViewerGl::showImage( cv::Mat image )
+bool CQtOpenCVViewerGl::showImage( cv::Mat image, qint64 timestampus )
 {
     bufferMutex.lock();
     image.copyTo(mOrigImage);

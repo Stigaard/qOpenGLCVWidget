@@ -14,7 +14,7 @@ public:
     explicit CQtOpenCVViewerGl(QWidget *parent = 0);
 
 public slots:
-    bool    showImage( cv::Mat image ); /// Used to set the image to be viewed
+    bool    showImage( cv::Mat image, qint64 timestamp =0 ); /// Used to set the image to be viewed
 protected:
     void 	initializeGL(); /// OpenGL initialization
     void 	paintGL(); /// OpenGL Rendering
