@@ -1,6 +1,6 @@
 #include "qOpenGLCVWidget.h"
 #include "qOpenGLCVWidget.moc"
-#include <QTimer>
+#include <QDateTime>
 
 CQtOpenCVViewerGl::CQtOpenCVViewerGl(QWidget *parent) :
     QGLWidget(parent)
@@ -87,9 +87,15 @@ void CQtOpenCVViewerGl::paintGL()
 
 bool CQtOpenCVViewerGl::showImage( cv::Mat image, qint64 timestampus )
 {
-    bufferMutex.lock();
-    image.copyTo(mOrigImage);
-    bufferMutex.unlock();
-    glDraw();
+    qint64 temp = QDateTime::currentMSecsSinceEpoch();
+    if(temp > lastImageTime + 100)
+    {
+	lastImageTime = temp;
+      
+	bufferMutex.lock();
+	image.copyTo(mOrigImage);
+	bufferMutex.unlock();
+	glDraw();
+    }
     return true;
 }

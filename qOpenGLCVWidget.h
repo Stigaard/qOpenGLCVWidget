@@ -25,6 +25,8 @@ private:
     QColor 	mBgColor;		/// Background color
     QMutex bufferMutex;
     GLuint texName;
+    qint64 lastImageTime;
+  
 };
 
 #endif // QOPENGLCVWIDGET_H
