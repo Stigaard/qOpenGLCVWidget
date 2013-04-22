@@ -6,6 +6,7 @@ CQtOpenCVViewerGl::CQtOpenCVViewerGl(QWidget *parent) :
     QGLWidget(parent)
 {
      mBgColor = QColor::fromRgb(0, 0, 150);
+     lastImageTime = QDateTime::currentMSecsSinceEpoch();
 }
 
 void CQtOpenCVViewerGl::initializeGL()
