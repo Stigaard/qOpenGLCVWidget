@@ -89,7 +89,7 @@ void CQtOpenCVViewerGl::paintGL()
 bool CQtOpenCVViewerGl::showImage( cv::Mat image, qint64 timestampus )
 {
     qint64 temp = QDateTime::currentMSecsSinceEpoch();
-    if(temp > lastImageTime + 100)
+    if(temp > lastImageTime + 50)
     {
 	lastImageTime = temp;
       
