@@ -15,6 +15,10 @@ public:
 
 public slots:
     bool    showImage( cv::Mat image, qint64 timestamp =0 ); /// Used to set the image to be viewed
+    bool    showImage( cv::Mat_<uint8_t> image, qint64 timestamp =0 ); /// Used to set the image to be viewed
+    void    addAlpha(const cv::Mat_<uint8_t> &alphaChannel);
+    void    updateBuffer(const cv::Mat_<uint8_t> &image, qint64 timestamp =0 );
+    void    updateBuffer(const cv::Mat &image, qint64 timestamp =0 );
 protected:
     void 	initializeGL(); /// OpenGL initialization
     void 	paintGL(); /// OpenGL Rendering

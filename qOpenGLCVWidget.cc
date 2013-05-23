@@ -93,10 +93,58 @@ bool CQtOpenCVViewerGl::showImage( cv::Mat image, qint64 timestampus )
     {
 	lastImageTime = temp;
       
+    updateBuffer(image,timestampus);
+    glDraw();
+    return true;
+}
+
+void CQtOpenCVViewerGl::updateBuffer(const cv::Mat_< uint8_t >& image, qint64 timestamp)
+{
 	bufferMutex.lock();
 	image.copyTo(mOrigImage);
 	bufferMutex.unlock();
-	glDraw();
-    }
-    return true;
 }
+
+
+void CQtOpenCVViewerGl::addAlpha(const cv::Mat_<uint8_t> &alphaChannel)
+{
+
+  cv::Mat_<uint8_t> alphaCopy = alphaChannel.clone();
+    //cv::Mat_<uint8_t> matArray[] = {alphaChannel,alphaChannel,alphaChannel};
+    bufferMutex.lock();
+
+    //cv::Mat threeChannelImg;
+    //cv::merge(matArray,3,threeChannelImg);
+    cv::Size size= mOrigImage.size();
+    if (size.area()!=0)
+    {
+      cv::resize(alphaCopy,alphaCopy,mOrigImage.size());
+      //cv::mixChannels(&alphaChannel,1,&threeChannelImg,1,fromto,3);
+      
+      //cv::Mat secondOp(threeChannelImg.size(),threeChannelImg.depth());
+      //assert(mOrigImage.size()==threeChannelImg.size());
+      //assert(mOrigImage.depth()==threeChannelImg.depth());
+      //int channel1=mOrigImage.channels();
+      //int channel2 = threeChannelImg.channels();
+      //assert(mOrigImage.channels()==threeChannelImg.channels());
+      //mOrigImage = firstOp+secondOp;
+      //mOrigImage = firstOp
+      cv::addWeighted(mOrigImage,0.5,alphaCopy,0.5,0,mOrigImage);
+    }
+    bufferMutex.unlock();
+    glDraw();    
+}
+
+bool CQtOpenCVViewerGl::showImage(cv::Mat_< uint8_t > image, qint64 timestamp)
+{
+  showImage((cv::Mat)image,timestamp);
+
+}
+
+void CQtOpenCVViewerGl::updateBuffer(const cv::Mat& image, qint64 timestamp)
+{
+  cv::Mat_<uint8_t> mat;
+  image.convertTo(mat,CV_8UC1);
+  updateBuffer(mat,timestamp);
+}
+
