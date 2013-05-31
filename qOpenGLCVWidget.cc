@@ -102,6 +102,7 @@ void CQtOpenCVViewerGl::updateBuffer(const cv::Mat_< uint8_t >& image, qint64 ti
 	  m_bufferMutex.lock();
 	  m_currBufferImageTime = timestamp;
 	  image.copyTo(m_buffer);
+	  image.copyTo(mOrigImage);
 	  m_bufferMutex.unlock();
 	  redraw();
 	  // redraw if necessary;
@@ -113,7 +114,6 @@ void CQtOpenCVViewerGl::addAlpha(const cv::Mat_<uint8_t> &alphaChannel, qint64 t
 {
 
   cv::Mat_<uint8_t> alphaCopy = alphaChannel.clone();
-    //cv::Mat_<uint8_t> matArray[] = {alphaChannel,alphaChannel,alphaChannel};
     m_bufferMutex.lock();
 
     cv::Size size= mOrigImage.size();
@@ -160,21 +160,20 @@ void CQtOpenCVViewerGl::mixImages()
   
   if (m_currBufferImageTime == m_currOverlayImageTime)
   {
-    cv::Mat_<uint8_t> alphaCopy;
+    m_bufferMutex.lock();
+    m_overlayMutex.lock();
+    cv::Mat_<uint8_t> alphaCopy = m_overlayImage.clone();
     cv::Size size= mOrigImage.size();
     if (size.area()!=0)
     {
-      m_bufferMutex.lock();
-      m_overlayMutex.lock();
-      cv::resize(m_overlayImage,alphaCopy,size);
-      cv::addWeighted(mOrigImage,0.5,alphaCopy,0.5,0,mOrigImage);
-      m_overlayMutex.unlock();
-      m_bufferMutex.unlock();
-    }
-  }
-    
-  
 
+      cv::resize(alphaCopy,alphaCopy,size);
+      cv::addWeighted(m_buffer,0.5,alphaCopy,0.5,0,mOrigImage);
+      
+    }
+    m_overlayMutex.unlock();
+    m_bufferMutex.unlock();
+  }
 }
 
 
