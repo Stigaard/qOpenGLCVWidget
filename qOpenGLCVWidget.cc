@@ -167,7 +167,7 @@ void CQtOpenCVViewerGl::mixImages()
     if (size.area()!=0)
     {
 
-      cv::resize(alphaCopy,alphaCopy,size);
+      cv::resize(alphaCopy,alphaCopy,size,0,0,cv::INTER_NEAREST); //NOTE delete the last three parameters to use linear interpolation.
       cv::addWeighted(m_buffer,0.5,alphaCopy,0.5,0,mOrigImage);
       
     }
