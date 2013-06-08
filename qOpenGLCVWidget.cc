@@ -68,9 +68,9 @@ void CQtOpenCVViewerGl::paintGL()
 	//Draw image from OpenCV capture
 	m_bufferMutex.lock();
 	if(mOrigImage.channels()==3)
-	  glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_BGR, GL_UNSIGNED_BYTE,mOrigImage.ptr());		
+	    glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_BGR, GL_UNSIGNED_BYTE,mOrigImage.ptr());
 	else
-	  glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_LUMINANCE, GL_UNSIGNED_BYTE,mOrigImage.ptr());		
+	    glDrawPixels(mOrigImage.size().width, mOrigImage.size().height, GL_LUMINANCE, GL_UNSIGNED_BYTE,mOrigImage.ptr());		
 // 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, mOrigImage.size().width, mOrigImage.size().height, 0, GL_BGR, GL_UNSIGNED_BYTE, mOrigImage.ptr());
 	m_bufferMutex.unlock();
 // 	glEnable(GL_TEXTURE_2D);
@@ -126,6 +126,14 @@ void CQtOpenCVViewerGl::addAlpha(const cv::Mat_<uint8_t> &alphaChannel, qint64 t
     glDraw();    
 }
 
+void CQtOpenCVViewerGl::updateBuffer(const cv::Mat_< uint16_t >& image, qint64 timestamp)
+{
+    cv::Mat_<uint8_t> img;
+    convert16to8bit(image, img);
+    updateBuffer(img, timestamp);
+}
+
+
 bool CQtOpenCVViewerGl::showImage(cv::Mat_< uint8_t > image, qint64 timestamp)
 {
   showImage((cv::Mat)image,timestamp);
@@ -134,9 +142,37 @@ bool CQtOpenCVViewerGl::showImage(cv::Mat_< uint8_t > image, qint64 timestamp)
 
 void CQtOpenCVViewerGl::updateBuffer(const cv::Mat& image, qint64 timestamp)
 {
-  cv::Mat_<uint8_t> mat;
-  image.convertTo(mat,CV_8UC1);
-  updateBuffer(mat,timestamp);
+  
+  if(image.channels()==1)
+  {
+    if(image.depth() == 2)
+    {
+      cv::Mat_<uint16_t> mat;
+      image.convertTo(mat,CV_16UC1);
+      updateBuffer(mat,timestamp);
+    }
+    else
+    {
+      cv::Mat_<uint8_t> mat;
+      image.convertTo(mat,CV_8UC1);
+      updateBuffer(mat,timestamp);
+    }
+  }
+  else
+  {
+    if(image.depth() == 2)
+    {
+      cv::Mat_<uint16_t> mat;
+      image.convertTo(mat,CV_16UC3);
+      updateBuffer(mat,timestamp);
+    }
+    else
+    {
+      cv::Mat_<uint8_t> mat;
+      image.convertTo(mat,CV_8UC3);
+      updateBuffer(mat,timestamp);
+    }
+  }
 }
 
 void CQtOpenCVViewerGl::redraw()
@@ -176,4 +212,20 @@ void CQtOpenCVViewerGl::mixImages()
   }
 }
 
-
+void CQtOpenCVViewerGl::convert16to8bit(cv::InputArray in, cv::OutputArray out)
+{
+  if(in.channels()==3)
+  {
+    std::cerr << "3 channel images not yet supported in 16bit" << std::endl;
+    assert(in.channels()==3);
+  }
+  uint16_t * in_ = (uint16_t*)in.getMat().ptr();
+  cv::Mat tmp_out(in.getMat().size().height, in.getMat().size().width, cv::DataType<uint8_t>::type);
+  uint8_t * out_ = tmp_out.ptr();
+  uint16_t * end = in_ + (in.getMat().size().height * in.getMat().size().width);
+  while(in_!=end)
+  {
+    *out_++ = (*in_++)>>8;
+  }
+  tmp_out.copyTo(out);
+}

@@ -18,6 +18,7 @@ public slots:
     bool    showImage( cv::Mat_<uint8_t> image, qint64 timestamp =0 ); /// Used to set the image to be viewed
     void    addAlpha(const cv::Mat_<uint8_t> &alphaChannel, qint64 timestamp =0);
     void    updateBuffer(const cv::Mat_<uint8_t> &image, qint64 timestamp =0 );
+    void    updateBuffer(const cv::Mat_<uint16_t> &image, qint64 timestamp =0 );
     void    updateBuffer(const cv::Mat &image, qint64 timestamp =0 );
     void    updateOverlayBuffer(const cv::Mat_<uint8_t> &image, qint64 timestamp =0);
 protected:
@@ -35,6 +36,7 @@ private:
     qint64 m_currOverlayImageTime; // timestamp that indicate the ID of the current image in buffer
     void redraw();
     void mixImages();
+    void convert16to8bit(cv::InputArray in, cv::OutputArray out);
 };
 
 #endif // QOPENGLCVWIDGET_H
