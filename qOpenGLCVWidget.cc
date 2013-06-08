@@ -93,7 +93,7 @@ bool CQtOpenCVViewerGl::showImage( cv::Mat image, qint64 timestampus )
 	lastImageTime = temp;
       
     updateBuffer(image,timestampus);
-    glDraw();
+//    glDraw();
     return true;
 }
 
