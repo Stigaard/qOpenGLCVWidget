@@ -18,6 +18,7 @@ public slots:
     bool    showImage( cv::Mat_<uint8_t> image, qint64 timestamp =0 ); /// Used to set the image to be viewed
     void    addAlpha(const cv::Mat_<uint8_t> &alphaChannel, qint64 timestamp =0);
     void    updateBuffer(const cv::Mat_<uint8_t> &image, qint64 timestamp =0 );
+    void    updateBuffer(const cv::Mat_<cv::Vec3b> &image, qint64 timestamp =0 );    
     void    updateBuffer(const cv::Mat_<uint16_t> &image, qint64 timestamp =0 );
     void    updateBuffer(const cv::Mat &image, qint64 timestamp =0 );
     void    updateOverlayBuffer(const cv::Mat_<uint8_t> &image, qint64 timestamp =0);

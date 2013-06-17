@@ -106,7 +106,19 @@ void CQtOpenCVViewerGl::updateBuffer(const cv::Mat_< uint8_t >& image, qint64 ti
 	  m_bufferMutex.unlock();
 	  redraw();
 	  // redraw if necessary;
-	
+}
+
+void CQtOpenCVViewerGl::updateBuffer(const cv::Mat_< cv::Vec3b >& image, qint64 timestamp)
+{
+	  
+	  m_bufferMutex.lock();
+	  m_currBufferImageTime = timestamp;
+	  image.copyTo(m_buffer);
+	  image.copyTo(mOrigImage);
+	  m_bufferMutex.unlock();
+	  
+	  redraw();
+	  
 }
 
 
@@ -142,7 +154,7 @@ bool CQtOpenCVViewerGl::showImage(cv::Mat_< uint8_t > image, qint64 timestamp)
 
 void CQtOpenCVViewerGl::updateBuffer(const cv::Mat& image, qint64 timestamp)
 {
-  
+ 
   if(image.channels()==1)
   {
     if(image.depth() == 2)
@@ -157,29 +169,32 @@ void CQtOpenCVViewerGl::updateBuffer(const cv::Mat& image, qint64 timestamp)
       image.convertTo(mat,CV_8UC1);
       updateBuffer(mat,timestamp);
     }
+      
   }
   else
   {
+    
     if(image.depth() == 2)
     {
-      cv::Mat_<uint16_t> mat;
+      cv::Mat_<cv::Vec3s> mat;
       image.convertTo(mat,CV_16UC3);
       updateBuffer(mat,timestamp);
     }
     else
     {
-      cv::Mat_<uint8_t> mat;
+      cv::Mat_<cv::Vec3b> mat;
       image.convertTo(mat,CV_8UC3);
       updateBuffer(mat,timestamp);
     }
+    
   }
+
 }
 
 void CQtOpenCVViewerGl::redraw()
 {
   mixImages();
   glDraw();
-
 }
 
 void CQtOpenCVViewerGl::updateOverlayBuffer(const cv::Mat_< uint8_t >& image, qint64 timestamp)
@@ -193,23 +208,21 @@ void CQtOpenCVViewerGl::updateOverlayBuffer(const cv::Mat_< uint8_t >& image, qi
 
 void CQtOpenCVViewerGl::mixImages()
 {
-  
   if (m_currBufferImageTime == m_currOverlayImageTime)
   {
     m_bufferMutex.lock();
     m_overlayMutex.lock();
     cv::Mat_<uint8_t> alphaCopy = m_overlayImage.clone();
     cv::Size size= mOrigImage.size();
-    if (size.area()!=0)
+    if ((size.area()!=0) && (mOrigImage.channels()==1))//Overlay disabled for 3 channel images
     {
-
       cv::resize(alphaCopy,alphaCopy,size,0,0,cv::INTER_NEAREST); //NOTE delete the last three parameters to use linear interpolation.
       cv::addWeighted(m_buffer,0.5,alphaCopy,0.5,0,mOrigImage);
-      
     }
     m_overlayMutex.unlock();
     m_bufferMutex.unlock();
   }
+  
 }
 
 void CQtOpenCVViewerGl::convert16to8bit(cv::InputArray in, cv::OutputArray out)
